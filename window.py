@@ -1,27 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-import webbrowser
-import random
-import string
 from password_generator import generer_mot_de_passe
 from account import creer_compte, authentifier, base_de_donnees_utilisateurs
-#3d5cde
-
-
-def creer_compte_callback():
-    nom_utilisateur = champ_utilisateur.get()
-    mot_de_passe = champ_mot_de_passe.get()
-    creer_compte(nom_utilisateur, mot_de_passe, base_de_donnees_utilisateurs)
-    print("Compte créé avec succès.")
-
-def authentifier_callback():
-    nom_utilisateur = champ_utilisateur.get()
-    mot_de_passe = champ_mot_de_passe.get()
-    if authentifier(nom_utilisateur, mot_de_passe, base_de_donnees_utilisateurs):
-        print("Authentification réussie.")
-        # Ajoutez ici le code pour permettre à l'utilisateur d'accéder aux fonctionnalités après l'authentification
-    else:
-        print("Nom d'utilisateur ou mot de passe incorrect.")
 
 class MyApp:
 
@@ -30,29 +10,31 @@ class MyApp:
         self.window.title("CyberShield")
         self.window.geometry("720x480")
         self.window.minsize(480, 360)
-        self.window.iconbitmap("")
-        self.window.config(background='#3d5cde')
+        self.window.iconbitmap("CYBERSHIELD.ico")
+        self.window.config(background='#ffd700')
 
-        # initialization des composants
-        self.frame = Frame(self.window, bg='#3d5cde')
+        # Initialization of components
+        self.frame = Frame(self.window, bg='#800080')
 
-        # creation des composants
+        # Creation of components
         self.create_widgets()
 
-        # empaquetage
+        # Packaging
         self.frame.pack(expand=YES)
 
     def create_widgets(self):
         self.create_title()
         self.create_subtitle()
+        self.create_entry_fields()
+        self.create_buttons()
 
     def create_title(self):
-        label_title = Label(self.frame, text="Gestionnaire de Mots de passe", font=("Courrier", 40), bg='#3d5cde',
+        label_title = Label(self.frame, text="Gestionnaire de Mots de passe", font=("Courrier", 40), bg='#800080',
                             fg='white')
         label_title.pack()
 
-    def subtitle(self):
-        label_subtitle = Label(self.frame, text="Bienvenue, veuillez vous identifiez ou créer un compte", font=("Courrier", 25), bg='#3d5cde',
+    def create_subtitle(self):
+        label_subtitle = Label(self.frame, text="Bienvenue, veuillez vous identifier ou créer un compte", font=("Courrier", 25), bg='#800080',
                                fg='white')
         label_subtitle.pack()
 
@@ -83,10 +65,10 @@ class MyApp:
         mot_de_passe = self.champ_mot_de_passe.get()
         if authentifier(nom_utilisateur, mot_de_passe, base_de_donnees_utilisateurs):
             print("Authentification réussie.")
-            # Ajoutez ici le code pour permettre à l'utilisateur d'accéder aux fonctionnalités après l'authentification
+            # Add code here to allow the user to access features after authentication
         else:
             print("Nom d'utilisateur ou mot de passe incorrect.")
 
-# afficher
+# Display
 app = MyApp()
 app.window.mainloop()
