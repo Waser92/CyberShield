@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from account import authentifier
+
 class GestionMotsDePasse:
     def __init__(self, fenetre_principale, nom_utilisateur):
         self.fenetre_gestion = tk.Toplevel(fenetre_principale)

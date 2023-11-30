@@ -81,6 +81,7 @@ class MyApp:
         nom_utilisateur = self.champ_utilisateur.get()
         mot_de_passe = self.champ_mot_de_passe.get()
             # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
+            
     def clear_entry(self, event):
         widget = event.widget
         initial_text = "Nom d'utilisateur" if widget == self.entry_nom_utilisateur else "Mot de passe"
