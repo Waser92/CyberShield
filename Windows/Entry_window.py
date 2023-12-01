@@ -1,31 +1,17 @@
 from tkinter import *
 from tkinter import ttk
 import subprocess
+from Classes import MyWindow_base
 #030720
 
-class MyApp:
+class MyWindow_Entry(MyWindow_base):
 
     def __init__(self):
-        self.window = Tk()
-        self.window.title("CyberShield")
-        self.window.geometry("800x480")
-        self.window.minsize(800, 360)
-        self.window.iconbitmap("")
-        self.window.config(background='#030720')
-
-    # Initialisation of components
-        self.frame_top = Frame(self.window, bg='#030720')
-        self.frame_center = Frame(self.window, bg='#030720')
-        self.frame_bottom = Frame(self.window, bg='#030720')
-
+        # Call the constructor of the parent class
+        super().__init__()
 
         # Creation of components
         self.create_widgets()
-
-        # Packaging
-        self.frame_top.pack(side=TOP, fill=BOTH, expand=YES)
-        self.frame_center.pack(side=TOP, fill=BOTH, expand=YES)
-        self.frame_bottom.pack(side=BOTTOM, fill=BOTH, expand=YES)
 
     def create_widgets(self):
         self.create_title()
@@ -47,19 +33,19 @@ class MyApp:
         style = ttk.Style()
         style.configure("TButton", padding=(20, 10))
 
-        bouton_creer_compte = ttk.Button(self.frame_center, text="Créer un compte", command=self.ouvrir_create_account)
+        bouton_creer_compte = ttk.Button(self.frame_center, text="S'inscrire", command=self.ouvrir_create_account)
         bouton_creer_compte.pack(pady=10)
 
-        bouton_authentifier = ttk.Button(self.frame_bottom, text="S'authentifier", command=self.ouvrir_connection_window)
+        bouton_authentifier = ttk.Button(self.frame_bottom, text="Se connecter", command=self.ouvrir_connection_window)
         bouton_authentifier.pack(pady=10)
 
     def ouvrir_create_account(self):
-    # Appeler le script Create_account.py
-        subprocess.run(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Create_account_window.py"])
+        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Create_account_window.py"])
+        self.window.destroy()
 
     def ouvrir_connection_window(self):
-    # Appeler le script Connection_window.py
-        subprocess.run(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Connection_window.py"])
+        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Connection_window.py"])
+        self.window.destroy()
 # Display
-app = MyApp()
+app = MyWindow_Entry()
 app.window.mainloop()

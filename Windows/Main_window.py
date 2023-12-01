@@ -1,58 +1,109 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
+from Classes import MyWindow_base
 
-class GestionnaireMotsDePasse:
-    def __init__(self, fenetre_principale):
-        self.fenetre_principale = fenetre_principale
-        self.fenetre_principale.title("Gestionnaire de Mots de Passe")
+class MyWindow_Main(MyWindow_base):
+    
+    def __init__(self):
+        # Appeler le constructeur de la classe parente
+        super().__init__()
 
+        # Création des composants
+        self.create_widgets()
         self.liste_identifiants = []
         self.liste_mots_de_passe = []
 
-        self.listbox = tk.Listbox(self.fenetre_principale, selectmode=tk.SINGLE, font=("Arial", 12, "bold"))
-        self.listbox.pack(pady=10)
-
-        self.bouton_ajouter = tk.Button(self.fenetre_principale, text="Ajouter", command=self.ajouter_mot_de_passe)
-        self.bouton_ajouter.pack(pady=5)
-
-        self.bouton_modifier = tk.Button(self.fenetre_principale, text="Modifier", command=self.modifier_mot_de_passe)
-        self.bouton_modifier.pack(pady=5)
-        self.bouton_modifier.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
-
-        self.bouton_supprimer = tk.Button(self.fenetre_principale, text="Supprimer", command=self.supprimer_mot_de_passe)
-        self.bouton_supprimer.pack(pady=5)
-        self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
-
         self.maj_liste()
 
+    def create_widgets(self):
+        self.create_title()
+        self.create_subtitle()
+        self.create_listbox()
+        self.create_buttons()
+    
+    def create_title(self):
+        label_title = tk.Label(self.frame_top, text="\n Gestionnaire de Mots de passe\n ", font=("Courrier", 40), bg='#030720', fg='white')
+        label_title.pack()
+
+    def create_subtitle(self):
+        label_subtitle = tk.Label(self.frame_top, text="Connectez vous avec votre nom d'utilisateur \n et votre mot de passe.", font=("Courrier", 25), bg='#030720', fg='white')
+        label_subtitle.pack()
+
+    def create_buttons(self):
+        # Bouton Ajouter
+        self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
+        self.bouton_ajouter.pack(pady=10, ipadx=20, ipady=10)
+
+        # Bouton Modifier
+        self.bouton_modifier = tk.Button(self.frame_bottom, text="Modifier", command=self.modifier_mot_de_passe)
+        self.bouton_modifier.pack(pady=10, ipadx=20, ipady=10)
+        self.bouton_modifier.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
+
+        # Bouton Supprimer
+        self.bouton_supprimer = tk.Button(self.frame_bottom, text="Supprimer", command=self.supprimer_mot_de_passe)
+        self.bouton_supprimer.pack(pady=10, ipadx=20, ipady=10)
+        self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
+        
+    def create_listbox(self):
+        self.listbox = tk.Listbox(self.frame_center, selectmode=tk.SINGLE, font=("Arial", 12, "bold"))
+        self.listbox.pack(pady=20)
+        
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
-        nouvelle_fenetre = tk.Toplevel(self.fenetre_principale)
+        nouvelle_fenetre = tk.Toplevel(self.frame_center)
         nouvelle_fenetre.title("Ajouter/Modifier un Mot de Passe")
 
-        label_site = tk.Label(nouvelle_fenetre, text="Site:", font=("Arial", 12))
-        label_site.grid(row=0, column=0, padx=10, pady=5)
-        entry_site = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
-        entry_site.grid(row=0, column=1, padx=10, pady=5)
+        # Site
+        self.entry_site = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
+        self.entry_site.insert(0, "Site: ")
+        self.entry_site.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_site.grid(row=0, column=1, padx=10, pady=5)
+        self.entry_site.bind("<FocusIn>", lambda event, widget=self.entry_site: self.clear_entry(event, widget))
+        self.entry_site.bind("<FocusOut>", lambda event, widget=self.entry_site: self.restore_default_text(event, widget))
 
-        label_email = tk.Label(nouvelle_fenetre, text="Email:", font=("Arial", 12))
-        label_email.grid(row=1, column=0, padx=10, pady=5)
-        entry_email = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
-        entry_email.grid(row=1, column=1, padx=10, pady=5)
+        # Email
+        self.entry_email = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
+        self.entry_email.grid(row=1, column=1, padx=10, pady=5)
+        self.entry_email.insert(0, "Email: ")
+        self.entry_email.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_email.bind("<FocusIn>", lambda event, widget=self.entry_email: self.clear_entry(event, widget))
+        self.entry_email.bind("<FocusOut>", lambda event, widget=self.entry_email: self.restore_default_text(event, widget))
 
-        label_identifiant = tk.Label(nouvelle_fenetre, text="Identifiant:", font=("Arial", 12))
-        label_identifiant.grid(row=2, column=0, padx=10, pady=5)
-        entry_identifiant = tk.Entry(nouvelle_fenetre, font=("Arial", 12, "bold"))
-        entry_identifiant.grid(row=2, column=1, padx=10, pady=5)
+        # Identifiant
+        self.entry_identifiant = tk.Entry(nouvelle_fenetre, font=("Arial", 12, "bold"))
+        self.entry_identifiant.grid(row=2, column=1, padx=10, pady=5)
+        self.entry_identifiant.insert(0, "Identifiant")
+        self.entry_identifiant.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_identifiant.bind("<FocusIn>", lambda event, widget=self.entry_identifiant: self.clear_entry(event, widget))
+        self.entry_identifiant.bind("<FocusOut>", lambda event, widget=self.entry_identifiant: self.restore_default_text(event, widget))
 
-        label_mot_de_passe = tk.Label(nouvelle_fenetre, text="Mot de Passe:", font=("Arial", 12))
-        label_mot_de_passe.grid(row=3, column=0, padx=10, pady=5)
-        entry_mot_de_passe = tk.Entry(nouvelle_fenetre, show="*", font=("Arial", 12))
-        entry_mot_de_passe.grid(row=3, column=1, padx=10, pady=5)
+        # Mot de passe
+        self.entry_mot_de_passe = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
+        self.entry_mot_de_passe.grid(row=3, column=1, padx=10, pady=5)
+        self.entry_mot_de_passe.insert(0, "Mot de passe")
+        self.entry_mot_de_passe.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_mot_de_passe.bind("<FocusIn>", lambda event, widget=self.entry_mot_de_passe: self.clear_entry(event, widget))
+        self.entry_mot_de_passe.bind("<FocusOut>", lambda event, widget=self.entry_mot_de_passe: self.restore_default_text(event, widget))
 
         bouton_valider = tk.Button(nouvelle_fenetre, text="Valider", command=lambda: self.valider_mot_de_passe(
-            entry_site.get(), entry_email.get(), entry_identifiant.get(), entry_mot_de_passe.get(), nouvelle_fenetre))
+            self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_mot_de_passe.get(), nouvelle_fenetre))
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
+
+    def clear_entry(self, event, widget):
+        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
+
+        if widget.get() == initial_text:
+            widget.delete(0, "end")
+            widget.config(fg='black')  # Changer la couleur du texte en noir
+
+    def restore_default_text(self, event, widget):
+        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
+
+        if not widget.get():
+            widget.insert(0, initial_text)
+            widget.config(fg='grey')  # Changer la couleur du texte en gris clair
+
+
 
     def valider_mot_de_passe(self, site, email, identifiant, mot_de_passe, fenetre):
         if site and identifiant and mot_de_passe:
@@ -80,10 +131,10 @@ class GestionnaireMotsDePasse:
 
         # Ajoute les éléments mis à jour
         for i, identifiant in enumerate(self.liste_identifiants):
-            self.listbox.insert(tk.END, f"Identifiant: {identifiant}")
-            self.listbox.insert(tk.END, f"  {self.extraire_info('Site', self.liste_mots_de_passe[i])}")
-            self.listbox.insert(tk.END, f"  {self.extraire_info('Email', self.liste_mots_de_passe[i])}")
-            self.listbox.insert(tk.END, f"  {self.extraire_info('Mot de Passe', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"Site {self.extraire_info('Site', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"     Identifiant: {identifiant}")
+            self.listbox.insert(tk.END, f"     Email: {self.extraire_info('Email', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"     Mot de passe: {self.extraire_info('Mot de Passe', self.liste_mots_de_passe[i])}")
             self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
 
         # Active le bouton "Modifier" et "Supprimer" lorsque la liste n'est pas vide
@@ -134,8 +185,27 @@ class GestionnaireMotsDePasse:
             self.maj_liste()
 
             messagebox.showinfo("Succès", "Mot de passe supprimé avec succès.")
+        # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
 
-if __name__ == "__main__":
-    fenetre = tk.Tk()
-    gestionnaire = GestionnaireMotsDePasse(fenetre)
-    fenetre.mainloop()
+    
+    def clear_entry(self, event, widget):
+        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
+
+        if widget.get() == initial_text:
+            widget.delete(0, "end")
+            widget.config(fg='black')  # Changer la couleur du texte en noir
+
+    def restore_default_text(self, event, widget):
+        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
+
+        if not widget.get():
+            widget.insert(0, initial_text)
+            widget.config(fg='grey')  # Changer la couleur du texte en gris clair
+
+        if not widget.get():
+            widget.insert(0, initial_text)
+            widget.config(fg='grey')  # Changer la couleur du texte en gris clair
+
+# Display
+app = MyWindow_Main()
+app.window.mainloop()

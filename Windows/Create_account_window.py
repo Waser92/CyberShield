@@ -1,31 +1,16 @@
 from tkinter import *
 from tkinter import ttk
+from Classes import MyWindow_base
 #030720
-class MyApp:
+
+class MyWindow_create_account(MyWindow_base):
 
     def __init__(self):
-        self.window = Tk()
-        self.window.title("CyberShield")
-        self.window.geometry("800x480")
-        self.window.minsize(800, 360)
-        self.window.iconbitmap("")
-        self.window.config(background='#030720')
-        self.nom_utilisateur_var = StringVar()
-        self.mot_de_passe_var = StringVar()
-
-        # Initialisation of components
-        self.frame_top = Frame(self.window, bg='#030720')
-        self.frame_center = Frame(self.window, bg='#030720')
-        self.frame_bottom = Frame(self.window, bg='#030720')
-
-
+        # Call the constructor of the parent class
+        super().__init__()
+        
         # Creation of components
         self.create_widgets()
-
-        # Packaging
-        self.frame_top.pack(side=TOP, fill=BOTH, expand=YES)
-        self.frame_center.pack(side=TOP, fill=BOTH, expand=YES)
-        self.frame_bottom.pack(side=BOTTOM, fill=BOTH, expand=YES)
 
     def create_widgets(self):
         self.create_title()
@@ -47,7 +32,7 @@ class MyApp:
     def entry_fields(self):
         # Ajout des champs de saisie (Entry) pour le nom d'utilisateur et le mot de passe
         self.entry_nom_utilisateur = Entry(self.frame_center, textvariable=self.nom_utilisateur_var, font=("Courrier", 15))
-        self.entry_mot_de_passe = Entry(self.frame_center, textvariable=self.mot_de_passe_var, font=("Courrier", 15), show='*')
+        self.entry_mot_de_passe = Entry(self.frame_center, textvariable=self.mot_de_passe_var, font=("Courrier", 15))
 
         # Ajout du texte initial "Nom d'utilisateur" en gris clair
         self.entry_nom_utilisateur.insert(0, "Nom d'utilisateur")
@@ -78,8 +63,8 @@ class MyApp:
         bouton_valider.pack(pady=10)
 
     def creer_compte_callback(self):
-        nom_utilisateur = self.champ_utilisateur.get()
-        mot_de_passe = self.champ_mot_de_passe.get()
+        nom_utilisateur = self.entry_nom_utilisateur.get()
+        mot_de_passe = self.entry_mot_de_passe.get()
             # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
             
     def clear_entry(self, event):
@@ -100,6 +85,6 @@ class MyApp:
             widget.config(fg='grey')  # Changer la couleur du texte en gris clair
             
 # Display
-app = MyApp()
+app = MyWindow_create_account()
 app.window.mainloop()
 
