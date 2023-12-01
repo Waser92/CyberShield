@@ -28,6 +28,7 @@ class MyApp:
         self.frame_center.pack(side=TOP, fill=BOTH, expand=YES)
         self.frame_bottom.pack(side=BOTTOM, fill=BOTH, expand=YES)
 
+
     def create_widgets(self):
         self.create_title()
         self.create_subtitle()
