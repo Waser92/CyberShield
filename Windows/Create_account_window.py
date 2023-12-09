@@ -2,6 +2,14 @@ from tkinter import *
 from tkinter import ttk
 from Classes import MyWindow_base
 #030720
+import importlib.util
+chemin_acces = 'Password_Manager/Source/account.py'
+nom_module = 'account.py'
+module_spec = importlib.util.spec_from_file_location(nom_module, chemin_acces)
+module = importlib.util.module_from_spec(module_spec)
+module_spec.loader.exec_module(module)
+
+from account.py import save_password
 
 class MyWindow_create_account(MyWindow_base):
 
@@ -63,10 +71,11 @@ class MyWindow_create_account(MyWindow_base):
         bouton_valider.pack(pady=10)
 
     def creer_compte_callback(self):
-        nom_utilisateur = self.entry_nom_utilisateur.get()
+        username = self.entry_nom_utilisateur.get()
         mot_de_passe = self.entry_mot_de_passe.get()
-            # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
-            
+        save_password(username, password)
+
+    # Méthode pour effacer le texte initial lors du clic dans le champ de saisie   
     def clear_entry(self, event):
         widget = event.widget
         initial_text = "Nom d'utilisateur" if widget == self.entry_nom_utilisateur else "Mot de passe"
