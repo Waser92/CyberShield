@@ -1,22 +1,17 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import simpledialog, messagebox
 from Classes import MyWindow_base
+import subprocess
 #030720
-import importlib.util
-chemin_acces = 'Password_Manager/Source/account.py'
-nom_module = 'account.py'
-module_spec = importlib.util.spec_from_file_location(nom_module, chemin_acces)
-module = importlib.util.module_from_spec(module_spec)
-module_spec.loader.exec_module(module)
+from account import check_credentials
 
-from account.py import save_password
 
-class MyWindow_create_account(MyWindow_base):
+class MyWindow_connection(MyWindow_base):
 
     def __init__(self):
         # Call the constructor of the parent class
         super().__init__()
-        
         # Creation of components
         self.create_widgets()
 
@@ -27,12 +22,12 @@ class MyWindow_create_account(MyWindow_base):
         self.create_buttons()
 
     def create_title(self):
-        label_title = Label(self.frame_top, text="Gestionnaire de Mots de passe\n", font=("Courrier", 40), bg='#030720',
+        label_title = Label(self.frame_top, text="\n Gestionnaire de Mots de passe\n ", font=("Courrier", 40), bg='#030720',
                             fg='white')
         label_title.pack()
 
     def create_subtitle(self):
-        label_subtitle = Label(self.frame_top, text="Créer un compte en choissisant un nom d'utilisateur\n et un mot de passe fort", font=("Courrier", 25), bg='#030720',
+        label_subtitle = Label(self.frame_top, text="Connectez vous avec votre nom d'utilisateur \n et votre mot de passe.", font=("Courrier", 25), bg='#030720',
                                fg='white')
         label_subtitle.pack()
 
@@ -56,10 +51,11 @@ class MyWindow_create_account(MyWindow_base):
 
         self.entry_mot_de_passe.bind("<FocusIn>", self.clear_entry)
         self.entry_mot_de_passe.bind("<FocusOut>", self.restore_default_text)
-
+        
         # Ajout des champs de saisie à la fenêtre
         self.entry_nom_utilisateur.pack(pady=10)
         self.entry_mot_de_passe.pack(pady=10)
+        
 
     def create_buttons(self):
         
@@ -67,15 +63,26 @@ class MyWindow_create_account(MyWindow_base):
         style = ttk.Style()
         style.configure("TButton", padding=(20, 10))
 
-        bouton_valider = ttk.Button(self.frame_center, text="Créer le compte", command=self.creer_compte_callback)
+        bouton_valider = ttk.Button(self.frame_center, text="Valider", command=self.authentifier_callback)
         bouton_valider.pack(pady=10)
 
-    def creer_compte_callback(self):
-        username = self.entry_nom_utilisateur.get()
-        mot_de_passe = self.entry_mot_de_passe.get()
-        save_password(username, password)
 
-    # Méthode pour effacer le texte initial lors du clic dans le champ de saisie   
+    def authentifier_callback(self):
+        username = self.entry_nom_utilisateur.get()
+        password = self.entry_mot_de_passe.get()
+        Identification = check_credentials(username, password)
+        if Identification == False:
+            messagebox.showinfo("Erreur, Mot de passe ou identifiant incorrect")
+        else:
+            messagebox.showinfo("Identification réussite")
+            self.open_Main_window()
+            
+
+    def open_Main_window(self):
+        subprocess.Popen(["python", "Password_Manager\Source\Main_window.py"])
+        self.window.destroy()
+
+    # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
     def clear_entry(self, event):
         widget = event.widget
         initial_text = "Nom d'utilisateur" if widget == self.entry_nom_utilisateur else "Mot de passe"
@@ -92,8 +99,7 @@ class MyWindow_create_account(MyWindow_base):
         if not widget.get():
             widget.insert(0, initial_text)
             widget.config(fg='grey')  # Changer la couleur du texte en gris clair
-            
+        
 # Display
-app = MyWindow_create_account()
+app = MyWindow_connection()
 app.window.mainloop()
-

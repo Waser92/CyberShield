@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
+import random
+import string
+import subprocess
 from Classes import MyWindow_base
 
 class MyWindow_Main(MyWindow_base):
@@ -22,7 +25,7 @@ class MyWindow_Main(MyWindow_base):
         self.create_buttons()
     
     def create_title(self):
-        label_title = tk.Label(self.frame_top, text="\n Gestionnaire de Mots de passe\n ", font=("Courrier", 40), bg='#030720', fg='white')
+        label_title = tk.Label(self.frame_top, text="\n Gestionnaire de Mots de passe ", font=("Courrier", 40), bg='#030720', fg='white')
         label_title.pack()
 
     def create_subtitle(self):
@@ -30,6 +33,14 @@ class MyWindow_Main(MyWindow_base):
         label_subtitle.pack()
 
     def create_buttons(self):
+        # Bouton Déconnecter
+        bouton_deconnecter = tk.Button(self.frame_top, text="Déconnecter", command=self.deconnection)
+        bouton_deconnecter.pack(pady=10, ipadx=10, ipady=10)
+
+        # Bouton Générer mot de passe
+        bouton_generer_password = tk.Button(self.frame_top, text="Générer mot de passe", command=self.generate_password)
+        bouton_generer_password.pack(pady=10, ipadx=10, ipady=10)
+
         # Bouton Ajouter
         self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
         self.bouton_ajouter.pack(pady=10, ipadx=20, ipady=10)
@@ -45,9 +56,16 @@ class MyWindow_Main(MyWindow_base):
         self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
         
     def create_listbox(self):
+        
+        # Listbox pour afficher les mots de passe générés
+        self.listbox_passwords = tk.Listbox(self.frame_center, font=("Arial", 5, "bold"))
+        self.listbox_passwords.pack(pady=10, ipadx=10, ipady=10)
+
+        #Listbox pour afficher les mots de passe
         self.listbox = tk.Listbox(self.frame_center, selectmode=tk.SINGLE, font=("Arial", 12, "bold"))
         self.listbox.pack(pady=20)
-        
+
+
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
         nouvelle_fenetre = tk.Toplevel(self.frame_center)
@@ -88,6 +106,18 @@ class MyWindow_Main(MyWindow_base):
         bouton_valider = tk.Button(nouvelle_fenetre, text="Valider", command=lambda: self.valider_mot_de_passe(
             self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_mot_de_passe.get(), nouvelle_fenetre))
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
+
+    def generate_password():
+        caracteres = string.ascii_letters + string.digits + string.punctuation
+        mot_de_passe = ''.join(random.choice(caracteres) for _ in range(12))
+        return mot_de_passe
+
+        # Ajouter le mot de passe généré à la Listbox
+        self.listbox_passwords.insert(tk.END, f"Mot de passe généré: {nouveau_mot_de_passe}")
+    
+    def deconnection(self):
+        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Entry_window.py"])
+        self.window.destroy()
 
     def clear_entry(self, event, widget):
         initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"

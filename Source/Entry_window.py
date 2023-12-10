@@ -33,19 +33,23 @@ class MyWindow_Entry(MyWindow_base):
         style = ttk.Style()
         style.configure("TButton", padding=(20, 10))
 
-        bouton_creer_compte = ttk.Button(self.frame_center, text="S'inscrire", command=self.ouvrir_create_account)
+        bouton_creer_compte = ttk.Button(self.frame_center, text="S'inscrire", command=self.open_create_account)
         bouton_creer_compte.pack(pady=10)
 
-        bouton_authentifier = ttk.Button(self.frame_bottom, text="Se connecter", command=self.ouvrir_connection_window)
+        bouton_authentifier = ttk.Button(self.frame_bottom, text="Se connecter", command=self.open_connection_window)
         bouton_authentifier.pack(pady=10)
 
-    def ouvrir_create_account(self):
-        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Create_account_window.py"])
+    def open_create_account(self):
+        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Source/Create_account_window.py"])
         self.window.destroy()
 
-    def ouvrir_connection_window(self):
-        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Connection_window.py"])
+    def open_connection_window(self):
+        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Source/Connection_window.py"])
         self.window.destroy()
+
+
+
 # Display
 app = MyWindow_Entry()
 app.window.mainloop()
+

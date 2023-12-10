@@ -1,41 +1,48 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from account import authentifier
+import json
+import bcrypt
 
-class GestionMotsDePasse:
-    def __init__(self, fenetre_principale, nom_utilisateur):
-        self.fenetre_gestion = tk.Toplevel(fenetre_principale)
-        self.fenetre_gestion.title("Gestion des Mots de Passe")
+class PasswordManager:
+    def __init__(self, file_path='data.json'):
+        self.file_path = file_path
 
-        self.nom_utilisateur = nom_utilisateur
-        self.mots_de_passe = {}
+    def hash_password(self, password):
+        # Génère un sel aléatoire
+        salt = bcrypt.gensalt()
 
-        self.etiquette_nom_utilisateur = ttk.Label(self.fenetre_gestion, text=f"Bonjour, {self.nom_utilisateur}!")
-        self.etiquette_nom_utilisateur.grid(row=0, column=0, columnspan=2, pady=10)
+        # Hache le mot de passe avec le sel
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-        self.etiquette_site = ttk.Label(self.fenetre_gestion, text="Site Web:")
-        self.etiquette_site.grid(row=1, column=0, padx=10, pady=10)
+        return hashed_password
 
-        self.champ_site = ttk.Entry(self.fenetre_gestion)
-        self.champ_site.grid(row=1, column=1, padx=10, pady=10)
+    def save_password(self, username, password):
+        # Hache le mot de passe
+        hashed_password = self.hash_password(password)
 
-        self.etiquette_mot_de_passe = ttk.Label(self.fenetre_gestion, text="Mot de passe:")
-        self.etiquette_mot_de_passe.grid(row=2, column=0, padx=10, pady=10)
+        # Enregistre le nom d'utilisateur et le mot de passe haché dans un fichier
+        with open(self.file_path, 'a') as file:
+            data = {'username': username, 'hashed_password': hashed_password.decode('utf-8')}
+            json.dump(data, file)
+            file.write('\n')  # Ajoute une nouvelle ligne pour chaque enregistrement
 
-        self.champ_mot_de_passe = ttk.Entry(self.fenetre_gestion, show="*")
-        self.champ_mot_de_passe.grid(row=2, column=1, padx=10, pady=10)
+    def check_password(self, username, password):
+        # Charge les données depuis le fichier
+        with open(self.file_path, 'r') as file:
+            for line in file:
+                data = json.loads(line.strip())
 
-        self.bouton_ajouter = ttk.Button(self.fenetre_gestion, text="Ajouter Mot de Passe", command=self.ajouter_mot_de_passe)
-        self.bouton_ajouter.grid(row=3, column=0, columnspan=2, pady=10)
+                # Vérifie si le nom d'utilisateur correspond
+                if data['username'] == username:
+                    # Vérifie si le mot de passe correspond
+                    if bcrypt.checkpw(password.encode('utf-8'), data['hashed_password'].encode('utf-8')):
+                        return True
 
-    def ajouter_mot_de_passe(self):
-        site = self.champ_site.get()
-        mot_de_passe = self.champ_mot_de_passe.get()
+        return False
 
-        if site and mot_de_passe:
-            self.mots_de_passe[site] = mot_de_passe
-            messagebox.showinfo("Succès", "Mot de passe ajouté avec succès!")
-        else:
-            messagebox.showwarning("Erreur", "Veuillez saisir le site et le mot de passe.")
-
+    def get_saved_passwords(self):
+        # Charge tous les mots de passe enregistrés depuis le fichier
+        passwords = []
+        with open(self.file_path, 'r') as file:
+            for line in file:
+                data = json.loads(line.strip())
+                passwords.append(data)
+        return passwords
