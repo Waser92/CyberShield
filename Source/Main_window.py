@@ -37,10 +37,6 @@ class MyWindow_Main(MyWindow_base):
         bouton_deconnecter = tk.Button(self.frame_top, text="Déconnecter", command=self.deconnection)
         bouton_deconnecter.pack(pady=10, ipadx=10, ipady=10)
 
-        # Bouton Générer mot de passe
-        bouton_generer_password = tk.Button(self.frame_top, text="Générer mot de passe", command=self.generate_password)
-        bouton_generer_password.pack(pady=10, ipadx=10, ipady=10)
-
         # Bouton Ajouter
         self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
         self.bouton_ajouter.pack(pady=10, ipadx=20, ipady=10)
@@ -56,11 +52,6 @@ class MyWindow_Main(MyWindow_base):
         self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
         
     def create_listbox(self):
-        
-        # Listbox pour afficher les mots de passe générés
-        self.listbox_passwords = tk.Listbox(self.frame_center, font=("Arial", 5, "bold"))
-        self.listbox_passwords.pack(pady=10, ipadx=10, ipady=10)
-
         #Listbox pour afficher les mots de passe
         self.listbox = tk.Listbox(self.frame_center, selectmode=tk.SINGLE, font=("Arial", 12, "bold"))
         self.listbox.pack(pady=20)
@@ -107,17 +98,8 @@ class MyWindow_Main(MyWindow_base):
             self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_mot_de_passe.get(), nouvelle_fenetre))
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
 
-    def generate_password():
-        caracteres = string.ascii_letters + string.digits + string.punctuation
-        mot_de_passe = ''.join(random.choice(caracteres) for _ in range(12))
-        return mot_de_passe
-
-        # Ajouter le mot de passe généré à la Listbox
-        self.listbox_passwords.insert(tk.END, f"Mot de passe généré: {nouveau_mot_de_passe}")
-    
     def deconnection(self):
-        subprocess.Popen(["python", "C:/Users/thoma/Documents/Programme/Projets/Password_Manager/Windows/Entry_window.py"])
-        self.window.destroy()
+        self.open_Entry_window()
 
     def clear_entry(self, event, widget):
         initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
@@ -132,8 +114,6 @@ class MyWindow_Main(MyWindow_base):
         if not widget.get():
             widget.insert(0, initial_text)
             widget.config(fg='grey')  # Changer la couleur du texte en gris clair
-
-
 
     def valider_mot_de_passe(self, site, email, identifiant, mot_de_passe, fenetre):
         if site and identifiant and mot_de_passe:

@@ -78,9 +78,6 @@ class MyWindow_connection(MyWindow_base):
             self.open_Main_window()
             
 
-    def open_Main_window(self):
-        subprocess.Popen(["python", "Password_Manager\Source\Main_window.py"])
-        self.window.destroy()
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
     def clear_entry(self, event):

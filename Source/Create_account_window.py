@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import simpledialog, messagebox
+import subprocess
 from Classes import MyWindow_base
 from account import save_password
 #030720
@@ -66,16 +68,12 @@ class MyWindow_create_account(MyWindow_base):
     def creer_compte_callback(self):
         username = self.entry_nom_utilisateur.get()
         password = self.entry_mot_de_passe.get()
-        ValueError = save_password(username, password)
-        if Errorvalue == True:
+        ErrorValue = save_password(username, password)
+        if ErrorValue == True:
             messagebox.showinfo("Le nom d'utlisateur est déjà pris")
         else:
             messagebox.showinfo("Succès", "Compte ajouté avec succès.")
             self.open_Main_window()
-
-    def open_Main_window(self):
-        subprocess.Popen(["python", "Password_Manager\Source\Main_window.py"])
-        self.window.destroy()
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie   
     def clear_entry(self, event):

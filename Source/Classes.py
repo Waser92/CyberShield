@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+import subprocess
+import os
 
 class MyWindow_base:
 
@@ -22,3 +24,20 @@ class MyWindow_base:
         self.frame_top.pack(side=TOP, fill=BOTH, expand=YES)
         self.frame_center.pack(side=TOP, fill=BOTH, expand=YES)
         self.frame_bottom.pack(side=BOTTOM, fill=BOTH, expand=YES)
+        
+        
+    def open_Create_account(self):
+        script_path = os.path.join("Source", "Create_account_window.py")
+        subprocess.Popen(["python", script_path])
+        self.window.destroy()
+
+    def open_Connection_window(self):
+        script_path = os.path.join("Source", "Connection_window.py")
+        subprocess.Popen(["python", script_path])
+        self.window.destroy()
+        
+    def open_Main_window(self):
+        script_path = os.path.join("Source", "Main_window.py")
+        subprocess.Popen(["python", script_path])
+        self.window.destroy()
+    
