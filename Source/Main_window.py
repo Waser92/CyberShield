@@ -4,6 +4,7 @@ import random
 import string
 import subprocess
 from Classes import MyWindow_base
+from Gestion_mdp import PasswordManager
 
 class MyWindow_Main(MyWindow_base):
     
@@ -15,7 +16,7 @@ class MyWindow_Main(MyWindow_base):
         self.create_widgets()
         self.liste_identifiants = []
         self.liste_mots_de_passe = []
-
+        
         self.maj_liste()
 
     def create_widgets(self):
@@ -23,6 +24,7 @@ class MyWindow_Main(MyWindow_base):
         self.create_subtitle()
         self.create_listbox()
         self.create_buttons()
+        
     
     def create_title(self):
         label_title = tk.Label(self.frame_top, text="\n Gestionnaire de Mots de passe ", font=("Courrier", 40), bg='#030720', fg='white')
@@ -101,13 +103,6 @@ class MyWindow_Main(MyWindow_base):
     def deconnection(self):
         self.open_Entry_window()
 
-    def clear_entry(self, event, widget):
-        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
-
-        if widget.get() == initial_text:
-            widget.delete(0, "end")
-            widget.config(fg='black')  # Changer la couleur du texte en noir
-
     def restore_default_text(self, event, widget):
         initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
 
@@ -117,7 +112,6 @@ class MyWindow_Main(MyWindow_base):
 
     def valider_mot_de_passe(self, site, email, identifiant, mot_de_passe, fenetre):
         if site and identifiant and mot_de_passe:
-            # Ajoutez ou modifiez les informations du mot de passe à la liste
             if identifiant in self.liste_identifiants:
                 index = self.liste_identifiants.index(identifiant)
                 self.liste_mots_de_passe[index] = f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}"
@@ -125,12 +119,10 @@ class MyWindow_Main(MyWindow_base):
                 self.liste_identifiants.append(identifiant)
                 self.liste_mots_de_passe.append(f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}")
 
-            # Met à jour la liste affichée dans la fenêtre principale
+            self.password_manager.save_password(identifiant, mot_de_passe)
             self.maj_liste()
-
-            # Ferme la fenêtre de saisie
             fenetre.destroy()
-
+            
             messagebox.showinfo("Succès", "Mot de passe ajouté/modifié avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")

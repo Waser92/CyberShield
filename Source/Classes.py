@@ -40,4 +40,9 @@ class MyWindow_base:
         script_path = os.path.join("Source", "Main_window.py")
         subprocess.Popen(["python", script_path])
         self.window.destroy()
+        
+    def open_Entry_window(self):
+        script_path = os.path.join("Source", "Entry_window.py")
+        subprocess.Popen(["python", script_path])
+        self.window.destroy()
     
