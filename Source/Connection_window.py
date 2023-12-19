@@ -77,6 +77,9 @@ class MyWindow_connection(MyWindow_base):
             messagebox.showinfo("Identification réussite")
             self.open_Main_window()
             
+    def get_username(self):
+        username = self.entry_nom_utilisateur.get()
+        return username
 
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie

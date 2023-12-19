@@ -5,10 +5,11 @@ import string
 import subprocess
 from Classes import MyWindow_base
 from Gestion_mdp import PasswordManager
+from Connection_window import get_username
 
-class MyWindow_Main(MyWindow_base):
+class MyWindow_Main(MyWindow_base, PasswordManager):
     
-    def __init__(self):
+    def __init__(self, file_path='data.json'):
         # Appeler le constructeur de la classe parente
         super().__init__()
 
@@ -17,8 +18,11 @@ class MyWindow_Main(MyWindow_base):
         self.liste_identifiants = []
         self.liste_mots_de_passe = []
         
+        self.file_path = file_path
+        self.password_manager = PasswordManager(file_path)  # Utiliser PasswordManager pour la gestion des mots de passe
+        self.username = get_username()
         self.maj_liste()
-
+        
     def create_widgets(self):
         self.create_title()
         self.create_subtitle()
@@ -66,7 +70,7 @@ class MyWindow_Main(MyWindow_base):
 
         # Site
         self.entry_site = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
-        self.entry_site.insert(0, "Site: ")
+        self.entry_site.insert(0, "Site ")
         self.entry_site.config(fg='grey')  # Couleur gris clair par défaut
         self.entry_site.grid(row=0, column=1, padx=10, pady=5)
         self.entry_site.bind("<FocusIn>", lambda event, widget=self.entry_site: self.clear_entry(event, widget))
@@ -75,7 +79,7 @@ class MyWindow_Main(MyWindow_base):
         # Email
         self.entry_email = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
         self.entry_email.grid(row=1, column=1, padx=10, pady=5)
-        self.entry_email.insert(0, "Email: ")
+        self.entry_email.insert(0, "Email ")
         self.entry_email.config(fg='grey')  # Couleur gris clair par défaut
         self.entry_email.bind("<FocusIn>", lambda event, widget=self.entry_email: self.clear_entry(event, widget))
         self.entry_email.bind("<FocusOut>", lambda event, widget=self.entry_email: self.restore_default_text(event, widget))
@@ -119,18 +123,22 @@ class MyWindow_Main(MyWindow_base):
                 self.liste_identifiants.append(identifiant)
                 self.liste_mots_de_passe.append(f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}")
 
-            self.password_manager.save_password(identifiant, mot_de_passe)
+            self.save_password(identifiant, mot_de_passe)
             self.maj_liste()
             fenetre.destroy()
             
             messagebox.showinfo("Succès", "Mot de passe ajouté/modifié avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
+            
 
-    def maj_liste(self):
+    def maj_liste(self, username):
         # Efface la liste actuelle
         self.listbox.delete(0, tk.END)
 
+        # Accéder à la liste de mots de passe dans PasswordManager
+        passwords = self.password_manager.get_saved_passwords()
+        
         # Ajoute les éléments mis à jour
         for i, identifiant in enumerate(self.liste_identifiants):
             self.listbox.insert(tk.END, f"Site {self.extraire_info('Site', self.liste_mots_de_passe[i])}")
