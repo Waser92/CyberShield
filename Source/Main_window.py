@@ -3,9 +3,9 @@ from tkinter import simpledialog, messagebox
 import random
 import string
 import subprocess
+import json
 from Classes import MyWindow_base
 from Gestion_mdp import PasswordManager
-from Connection_window import get_username
 
 class MyWindow_Main(MyWindow_base, PasswordManager):
     
@@ -20,7 +20,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         
         self.file_path = file_path
         self.password_manager = PasswordManager(file_path)  # Utiliser PasswordManager pour la gestion des mots de passe
-        self.username = get_username()
+        self.username = self.have_current_username()
         self.maj_liste()
         
     def create_widgets(self):
@@ -105,7 +105,27 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
 
     def deconnection(self):
+        # Appel de la fonction pour supprimer les informations utilisateur
+        self.delete_current_user_data()
+
+        # Ouverture de la fenêtre d'entrée
         self.open_Entry_window()
+
+    def delete_current_user_data(self):
+        try:
+            with open('current_user.json', 'w') as file:
+                file.truncate(0)  # Efface tout le contenu du fichier
+        except Exception as e:
+            messagebox.showerror("Erreur de suppression", f"Une erreur s'est produite lors de la suppression : {str(e)}")
+
+    def have_current_username():
+        try:
+            with open('current_user.json', 'r') as file:
+                user_data = json.load(file)
+                current_username = user_data[0].strip()
+            return current_username
+        except (FileNotFoundError, json.JSONDecodeError, IndexError):
+            return None
 
     def restore_default_text(self, event, widget):
         initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
@@ -132,13 +152,10 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
             
 
-    def maj_liste(self, username):
+    def maj_liste(self):
         # Efface la liste actuelle
         self.listbox.delete(0, tk.END)
 
-        # Accéder à la liste de mots de passe dans PasswordManager
-        passwords = self.password_manager.get_saved_passwords()
-        
         # Ajoute les éléments mis à jour
         for i, identifiant in enumerate(self.liste_identifiants):
             self.listbox.insert(tk.END, f"Site {self.extraire_info('Site', self.liste_mots_de_passe[i])}")

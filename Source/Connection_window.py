@@ -66,7 +66,11 @@ class MyWindow_connection(MyWindow_base):
         bouton_valider = ttk.Button(self.frame_center, text="Valider", command=self.authentifier_callback)
         bouton_valider.pack(pady=10)
 
-
+    def delete_current_user_data():
+        try:
+            with open('current_user.json', 'w') as file:
+                file.truncate(0)  # Efface tout le contenu du fichier
+                
     def authentifier_callback(self):
         username = self.entry_nom_utilisateur.get()
         password = self.entry_mot_de_passe.get()
@@ -74,12 +78,25 @@ class MyWindow_connection(MyWindow_base):
         if Identification == False:
             messagebox.showinfo("Erreur, Mot de passe ou identifiant incorrect")
         else:
+            self.save_current_username()
             messagebox.showinfo("Identification réussite")
             self.open_Main_window()
             
-    def get_username(self):
-        username = self.entry_nom_utilisateur.get()
-        return username
+    def save_current_username(username, self):
+        self.delete_current_user_data()
+        # Charger les données existantes (si le fichier existe)
+        try:
+            with open('current_user.json', 'r') as file:
+                data = file.readlines()
+        except FileNotFoundError:
+            data = []
+
+        # Enregistrer le nom d'utilisateur
+        data.append(f"{username}\n")
+
+        # Écrire les données dans le fichier
+        with open('current_user.json', 'w') as file:
+            file.writelines(data)
 
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie

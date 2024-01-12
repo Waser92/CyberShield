@@ -25,7 +25,6 @@ class MyWindow_base:
         self.frame_center.pack(side=TOP, fill=BOTH, expand=YES)
         self.frame_bottom.pack(side=BOTTOM, fill=BOTH, expand=YES)
         
-        
     def open_Create_account(self):
         script_path = os.path.join("Source", "Create_account_window.py")
         subprocess.Popen(["python", script_path])
