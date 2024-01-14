@@ -72,8 +72,18 @@ class MyWindow_create_account(MyWindow_base):
         if ErrorValue == True:
             messagebox.showinfo("Le nom d'utlisateur est déjà pris")
         else:
+            self.save_current_username(username)
             messagebox.showinfo("Succès", "Compte ajouté avec succès.")
             self.open_Main_window()
+
+    def save_current_username(self, username):
+            self.delete_current_user_data()
+            # Charger les données existantes (si le fichier existe)
+            try:
+                with open('current_user.json', 'r') as file:
+                    data = file.readlines()
+            except FileNotFoundError:
+                data = []
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie   
     def clear_entry(self, event):

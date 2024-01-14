@@ -66,8 +66,7 @@ class MyWindow_connection(MyWindow_base):
         bouton_valider = ttk.Button(self.frame_center, text="Valider", command=self.authentifier_callback)
         bouton_valider.pack(pady=10)
 
-    def delete_current_user_data():
-        try:
+    def delete_current_user_data(self):
             with open('current_user.json', 'w') as file:
                 file.truncate(0)  # Efface tout le contenu du fichier
                 
@@ -75,14 +74,14 @@ class MyWindow_connection(MyWindow_base):
         username = self.entry_nom_utilisateur.get()
         password = self.entry_mot_de_passe.get()
         Identification = check_credentials(username, password)
-        if Identification == False:
-            messagebox.showinfo("Erreur, Mot de passe ou identifiant incorrect")
+        if not Identification:
+            messagebox.showinfo("Erreur", "Mot de passe ou identifiant incorrect")
         else:
-            self.save_current_username()
+            self.save_current_username(username)
             messagebox.showinfo("Identification réussite")
             self.open_Main_window()
             
-    def save_current_username(username, self):
+    def save_current_username(self, username):
         self.delete_current_user_data()
         # Charger les données existantes (si le fichier existe)
         try:
