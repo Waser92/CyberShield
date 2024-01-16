@@ -35,7 +35,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         label_title.pack()
 
     def create_subtitle(self):
-        label_subtitle = tk.Label(self.frame_top, text="Connectez vous avec votre nom d'utilisateur \n et votre mot de passe.", font=("Courrier", 25), bg='#030720', fg='white')
+        label_subtitle = tk.Label(self.frame_top, text="Vous pouvez maintenant stocker vos informations de connexion \n en toute sécurité.", font=("Courrier", 25), bg='#030720', fg='white')
         label_subtitle.pack()
 
     def create_buttons(self):
@@ -61,7 +61,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
         nouvelle_fenetre = tk.Toplevel(self.frame_center)
-        nouvelle_fenetre.title("Ajouter/Modifier un Mot de Passe")
+        nouvelle_fenetre.title("Ajouterun Mot de Passe")
 
         # Site
         self.entry_site = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
@@ -87,16 +87,19 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         self.entry_identifiant.bind("<FocusIn>", lambda event, widget=self.entry_identifiant: self.clear_entry(event, widget))
         self.entry_identifiant.bind("<FocusOut>", lambda event, widget=self.entry_identifiant: self.restore_default_text(event, widget))
 
+
         # Mot de passe
-        self.entry_mot_de_passe = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
-        self.entry_mot_de_passe.grid(row=3, column=1, padx=10, pady=5)
-        self.entry_mot_de_passe.insert(0, "Mot de passe")
-        self.entry_mot_de_passe.config(fg='grey')  # Couleur gris clair par défaut
-        self.entry_mot_de_passe.bind("<FocusIn>", lambda event, widget=self.entry_mot_de_passe: self.clear_entry(event, widget))
-        self.entry_mot_de_passe.bindA("<FocusOut>", lambda event, widget=self.entry_mot_de_passe: self.restore_default_text(event, widget))
+        self.entry_password = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
+        self.entry_password.grid(row=2, column=1, padx=10, pady=5)
+        self.entry_password.insert(0, "Mot de passe")
+        self.entry_password.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_password.bind("<FocusIn>", lambda event, widget=self.entry_password: self.clear_entry(event, widget))
+        self.entry_password.bind("<FocusOut>", lambda event, widget=self.entry_password: self.restore_default_text(event, widget))
+
+
 
         bouton_valider = tk.Button(nouvelle_fenetre, text="Valider", command=lambda: self.valider_mot_de_passe(
-            self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_mot_de_passe.get(), nouvelle_fenetre))
+            self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_password.get(), nouvelle_fenetre))
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
 
     def deconnection(self):
@@ -146,8 +149,24 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
             
-
     def maj_liste(self):
+        # Efface la liste actuelle
+        self.listbox.delete(0, tk.END)
+
+        # Ajoute les éléments mis à jour
+        for i, identifiant in enumerate(self.liste_identifiants):
+            self.listbox.insert(tk.END, f"Site {self.extraire_info('Site', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"     Identifiant: {identifiant}")
+            self.listbox.insert(tk.END, f"     Email: {self.extraire_info('Email', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"     Mot de passe: {self.extraire_info('Mot de Passe', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
+
+        # Active le bouton "Modifier" et "Supprimer" lorsque la liste n'est pas vide
+            self.bouton_supprimer.config(state=tk.NORMAL)
+        else:
+            self.bouton_supprimer.config(state=tk.DISABLED)
+
+    def save_data(self):
         if self.username:
             user_file_path = f'{self.username}_data.json'
             try:
@@ -161,6 +180,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
 
             # Ajoute les éléments mis à jour
             for entry in user_data:
+                self.listbox.insert(tk.END, f"Site: {entry['site']}")
                 self.listbox.insert(tk.END, f"Identifiant: {entry['identifiant']}")
                 self.listbox.insert(tk.END, f"Mot de passe: {entry['mot_de_passe']}")
                 self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
@@ -191,20 +211,15 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
 
     
     def clear_entry(self, event, widget):
-        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
+        initial_text = widget.get()
 
-        if widget.get() == initial_text:
-            widget.delete(0, "end")
+        if initial_text == "Site " or initial_text == "Email " or initial_text == "Identifiant" or initial_text == "Mot de passe":
+            widget.delete(0, tk.END)
             widget.config(fg='black')  # Changer la couleur du texte en noir
 
     def restore_default_text(self, event, widget):
-        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
-
         if not widget.get():
-            widget.insert(0, initial_text)
-            widget.config(fg='grey')  # Changer la couleur du texte en gris clair
-
-        if not widget.get():
+            initial_text = "Site " if widget == self.entry_site else "Email " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
             widget.insert(0, initial_text)
             widget.config(fg='grey')  # Changer la couleur du texte en gris clair
 
