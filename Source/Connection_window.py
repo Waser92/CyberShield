@@ -86,16 +86,16 @@ class MyWindow_connection(MyWindow_base):
         # Charger les données existantes (si le fichier existe)
         try:
             with open('current_user.json', 'r') as file:
-                data = file.readlines()
+                data = file.read()
         except FileNotFoundError:
-            data = []
+            data = ""
 
         # Enregistrer le nom d'utilisateur
-        data.append(f"{username}\n")
+        data += f"{username}\n"
 
         # Écrire les données dans le fichier
         with open('current_user.json', 'w') as file:
-            file.writelines(data)
+            file.write(data)
 
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie

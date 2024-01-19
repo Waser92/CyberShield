@@ -45,4 +45,3 @@ class MyWindow_Entry(MyWindow_base):
 # Display
 app = MyWindow_Entry()
 app.window.mainloop()
-

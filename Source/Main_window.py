@@ -5,9 +5,10 @@ import string
 import subprocess
 import json
 from Classes import MyWindow_base
-from Gestion_mdp import PasswordManager
+from Gestion_data_user import GestionUserData
 
-class MyWindow_Main(MyWindow_base, PasswordManager):
+
+class MyWindow_Main(MyWindow_base, GestionUserData):
     
     def __init__(self, file_path='data.json'):
         # Appeler le constructeur de la classe parente
@@ -19,9 +20,11 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         self.liste_mots_de_passe = []
         
         self.file_path = file_path
-        self.password_manager = PasswordManager(file_path)  # Utiliser PasswordManager pour la gestion des mots de passe
         self.username = self.have_current_username()
         self.maj_liste()
+
+        # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
+        self.user_data_manager = GestionUserData(self.username)
         
     def create_widgets(self):
         self.create_title()
@@ -35,7 +38,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         label_title.pack()
 
     def create_subtitle(self):
-        label_subtitle = tk.Label(self.frame_top, text="Vous pouvez maintenant stocker vos informations de connexion \n en toute sécurité.", font=("Courrier", 25), bg='#030720', fg='white')
+        label_subtitle = tk.Label(self.frame_top, text="Vous pouvez maintenant enregistrer vos \n informations de connexion en toute sécurité.", font=("Courrier", 25), bg='#030720', fg='white')
         label_subtitle.pack()
 
     def create_buttons(self):
@@ -61,7 +64,7 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
         nouvelle_fenetre = tk.Toplevel(self.frame_center)
-        nouvelle_fenetre.title("Ajouterun Mot de Passe")
+        nouvelle_fenetre.title("Ajouter")
 
         # Site
         self.entry_site = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
@@ -79,15 +82,6 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         self.entry_email.bind("<FocusIn>", lambda event, widget=self.entry_email: self.clear_entry(event, widget))
         self.entry_email.bind("<FocusOut>", lambda event, widget=self.entry_email: self.restore_default_text(event, widget))
 
-        # Identifiant
-        self.entry_identifiant = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
-        self.entry_identifiant.grid(row=2, column=1, padx=10, pady=5)
-        self.entry_identifiant.insert(0, "Identifiant")
-        self.entry_identifiant.config(fg='grey')  # Couleur gris clair par défaut
-        self.entry_identifiant.bind("<FocusIn>", lambda event, widget=self.entry_identifiant: self.clear_entry(event, widget))
-        self.entry_identifiant.bind("<FocusOut>", lambda event, widget=self.entry_identifiant: self.restore_default_text(event, widget))
-
-
         # Mot de passe
         self.entry_password = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
         self.entry_password.grid(row=2, column=1, padx=10, pady=5)
@@ -96,6 +90,13 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
         self.entry_password.bind("<FocusIn>", lambda event, widget=self.entry_password: self.clear_entry(event, widget))
         self.entry_password.bind("<FocusOut>", lambda event, widget=self.entry_password: self.restore_default_text(event, widget))
 
+        # Identifiant
+        self.entry_identifiant = tk.Entry(nouvelle_fenetre, font=("Arial", 12))
+        self.entry_identifiant.grid(row=3, column=1, padx=10, pady=5)
+        self.entry_identifiant.insert(0, "Identifiant")
+        self.entry_identifiant.config(fg='grey')  # Couleur gris clair par défaut
+        self.entry_identifiant.bind("<FocusIn>", lambda event, widget=self.entry_identifiant: self.clear_entry(event, widget))
+        self.entry_identifiant.bind("<FocusOut>", lambda event, widget=self.entry_identifiant: self.restore_default_text(event, widget))
 
 
         bouton_valider = tk.Button(nouvelle_fenetre, text="Valider", command=lambda: self.valider_mot_de_passe(
@@ -141,10 +142,19 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
                 self.liste_identifiants.append(identifiant)
                 self.liste_mots_de_passe.append(f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}")
 
-            self.save_password(identifiant, mot_de_passe)
+            # Enregistrez les données dans le fichier JSON utilisateur spécifique
+            data_to_save = {
+                'site': site,
+                'email': email,
+                'identifiant': identifiant,
+                'mot_de_passe': mot_de_passe
+            }
+            self.user_data_manager.save_user_data({identifiant: data_to_save})
+
+            # Mettez à jour la liste affichée dans la fenêtre principale
             self.maj_liste()
             fenetre.destroy()
-            
+
             messagebox.showinfo("Succès", "Mot de passe ajouté/modifié avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
@@ -165,26 +175,6 @@ class MyWindow_Main(MyWindow_base, PasswordManager):
             self.bouton_supprimer.config(state=tk.NORMAL)
         else:
             self.bouton_supprimer.config(state=tk.DISABLED)
-
-    def save_data(self):
-        if self.username:
-            user_file_path = f'{self.username}_data.json'
-            try:
-                with open(user_file_path, 'r') as file:
-                    user_data = json.load(file)
-            except FileNotFoundError:
-                user_data = []
-
-            # Efface la liste actuelle
-            self.listbox.delete(0, tk.END)
-
-            # Ajoute les éléments mis à jour
-            for entry in user_data:
-                self.listbox.insert(tk.END, f"Site: {entry['site']}")
-                self.listbox.insert(tk.END, f"Identifiant: {entry['identifiant']}")
-                self.listbox.insert(tk.END, f"Mot de passe: {entry['mot_de_passe']}")
-                self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
-
 
 
     def extraire_info(self, champ, infos):

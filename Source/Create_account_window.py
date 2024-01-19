@@ -77,13 +77,20 @@ class MyWindow_create_account(MyWindow_base):
             self.open_Main_window()
 
     def save_current_username(self, username):
-            self.delete_current_user()
-            # Charger les données existantes (si le fichier existe)
-            try:
-                with open('current_user.json', 'r') as file:
-                    data = file.readlines()
-            except FileNotFoundError:
-                data = []
+        self.delete_current_user()
+        # Charger les données existantes (si le fichier existe)
+        try:
+            with open('current_user.json', 'r') as file:
+                data = file.read()
+        except FileNotFoundError:
+            data = ""
+
+        # Enregistrer le nom d'utilisateur
+        data += f"{username}\n"
+
+        # Écrire les données dans le fichier
+        with open('current_user.json', 'w') as file:
+            file.write(data)
     
     def delete_current_user(self):
             with open('current_user.json', 'w') as file:
