@@ -67,7 +67,7 @@ class MyWindow_connection(MyWindow_base):
         bouton_valider.pack(pady=10)
 
     def delete_current_user(self):
-            with open('current_user.json', 'w') as file:
+            with open('current_user.txt', 'w') as file:
                 file.truncate(0)  # Efface tout le contenu du fichier
                 
     def authentifier_callback(self):

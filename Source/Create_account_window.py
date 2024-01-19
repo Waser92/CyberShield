@@ -77,13 +77,17 @@ class MyWindow_create_account(MyWindow_base):
             self.open_Main_window()
 
     def save_current_username(self, username):
-            self.delete_current_user_data()
+            self.delete_current_user()
             # Charger les données existantes (si le fichier existe)
             try:
                 with open('current_user.json', 'r') as file:
                     data = file.readlines()
             except FileNotFoundError:
                 data = []
+    
+    def delete_current_user(self):
+            with open('current_user.json', 'w') as file:
+                file.truncate(0)  # Efface tout le contenu du fichier
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie   
     def clear_entry(self, event):
