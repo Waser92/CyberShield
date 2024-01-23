@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog, messagebox
+import json
 from Classes import MyWindow_base
 import subprocess
 #030720
@@ -70,32 +71,25 @@ class MyWindow_connection(MyWindow_base):
             with open('current_user.txt', 'w') as file:
                 file.truncate(0)  # Efface tout le contenu du fichier
                 
+
     def authentifier_callback(self):
         username = self.entry_nom_utilisateur.get()
         password = self.entry_mot_de_passe.get()
-        Identification = check_credentials(username, password)
-        if not Identification:
-            messagebox.showinfo("Erreur", "Mot de passe ou identifiant incorrect")
-        else:
+
+        if check_credentials(username, password):
             self.save_current_username(username)
-            messagebox.showinfo("Identification réussite")
+            messagebox.showinfo("Identification réussie")
             self.open_Main_window()
-            
+        else:
+            messagebox.showinfo("Erreur", "Mot de passe ou identifiant incorrect")
+
+
     def save_current_username(self, username):
-        self.delete_current_user()
-        # Charger les données existantes (si le fichier existe)
-        try:
-            with open('current_user.json', 'r') as file:
-                data = file.read()
-        except FileNotFoundError:
-            data = ""
+        data = {"username": username}
 
-        # Enregistrer le nom d'utilisateur
-        data += f"{username}\n"
-
-        # Écrire les données dans le fichier
+        # Écrire les données dans le fichier JSON
         with open('current_user.json', 'w') as file:
-            file.write(data)
+            json.dump(data, file, indent=4)
 
 
     # Méthode pour effacer le texte initial lors du clic dans le champ de saisie

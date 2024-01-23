@@ -6,11 +6,9 @@ def hash_password(password):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-    # Convertir les bytes en une représentation JSON compatible
-    salt_str = base64.b64encode(salt).decode('utf-8')
-    hashed_password_str = hashed_password.decode('utf-8')
+    salt_str = base64.b64encode(salt).decode('utf-8')  # Convertir en chaîne
 
-    return {'salt': salt_str, 'hashed_password': hashed_password_str}
+    return {'salt': salt_str, 'hashed_password': hashed_password.decode('utf-8')}
 
 def save_password(username, password):
     try:
@@ -30,7 +28,7 @@ def save_password(username, password):
 
     # Enregistrez la liste mise à jour dans le fichier avec un encodeur personnalisé
     with open('accounts.json', 'w') as file:
-        json.dump(data, file, default=lambda x: x.__dict__)
+        json.dump(data, file, indent=4, default=lambda x: x.__dict__)
 
     return False  # Pas d'erreur, le compte est ajouté avec succès
 
@@ -40,18 +38,17 @@ def check_credentials(username, password):
             data = json.load(file)
             for entry in data:
                 stored_username = entry['username']
-                stored_password = entry['password']
-                if username == stored_username and verify_password(password, stored_password):
+                stored_password_dict = entry['password']
+                if username == stored_username and verify_password(password, stored_password_dict):
                     return True
     except (FileNotFoundError, json.JSONDecodeError):
         return False
 
     return False
 
-
-def verify_password(input_password, stored_password):
-    stored_salt = base64.b64decode(stored_password['salt'])
-    stored_hashed_password = stored_password['hashed_password']
+def verify_password(input_password, stored_password_dict):
+    stored_salt = base64.b64decode(stored_password_dict['salt'])  # Convertir en bytes
+    stored_hashed_password = stored_password_dict['hashed_password']
 
     # Hasher le mot de passe d'entrée avec le sel stocké
     hashed_input_password = bcrypt.hashpw(input_password.encode('utf-8'), stored_salt)

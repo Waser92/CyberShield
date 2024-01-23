@@ -121,11 +121,11 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         try:
             with open('current_user.json', 'r') as file:
                 user_data = json.load(file)
-                current_username = user_data[0].strip()
+                current_username = user_data.get("username")
             return current_username
-        except (FileNotFoundError, json.JSONDecodeError, IndexError):
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return None
-
+        
     def restore_default_text(self, event, widget):
         initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
 

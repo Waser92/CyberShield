@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog, messagebox
+import json
 import subprocess
 from Classes import MyWindow_base
 from account import save_password
@@ -65,32 +66,25 @@ class MyWindow_create_account(MyWindow_base):
         bouton_valider = ttk.Button(self.frame_center, text="Créer le compte", command=self.creer_compte_callback)
         bouton_valider.pack(pady=10)
 
+
     def creer_compte_callback(self):
         username = self.entry_nom_utilisateur.get()
         password = self.entry_mot_de_passe.get()
-        ErrorValue = save_password(username, password)
-        if ErrorValue == True:
-            messagebox.showinfo("Le nom d'utlisateur est déjà pris")
+
+        if save_password(username, password):
+            messagebox.showinfo("Le nom d'utilisateur est déjà pris")
         else:
             self.save_current_username(username)
             messagebox.showinfo("Succès", "Compte ajouté avec succès.")
             self.open_Main_window()
 
+
     def save_current_username(self, username):
-        self.delete_current_user()
-        # Charger les données existantes (si le fichier existe)
-        try:
-            with open('current_user.json', 'r') as file:
-                data = file.read()
-        except FileNotFoundError:
-            data = ""
+        data = {"username": username}
 
-        # Enregistrer le nom d'utilisateur
-        data += f"{username}\n"
-
-        # Écrire les données dans le fichier
+        # Écrire les données dans le fichier JSON
         with open('current_user.json', 'w') as file:
-            file.write(data)
+            json.dump(data, file, indent=4)
     
     def delete_current_user(self):
             with open('current_user.json', 'w') as file:
