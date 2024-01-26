@@ -1,0 +1,9 @@
+[
+    {
+        "username": "Waser",
+        "password": {
+            "salt": "JDJiJDEyJGxHaEZFVkR4cnBBazgzcVloeWZjZGU=",
+            "hashed_password": "$2b$12$lGhFEVDxrpAk83qYhyfcderKdK9Zdo/W3SSpNqb0nC99/acRF1Fum"
+        }
+    }
+]

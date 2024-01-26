@@ -23,8 +23,9 @@ def save_password(username, password):
             return True  # Nom d'utilisateur déjà pris
 
     # Ajoutez le nouvel utilisateur à la liste des comptes avec le mot de passe hashé
-    hashed_password = hash_password(password)
-    data.append({'username': username, 'password': hashed_password})
+    hashed_password_result = hash_password(password)
+    data.append({'username': username, 'password': hashed_password_result})
+
 
     # Enregistrez la liste mise à jour dans le fichier avec un encodeur personnalisé
     with open('accounts.json', 'w') as file:
@@ -38,8 +39,8 @@ def check_credentials(username, password):
             data = json.load(file)
             for entry in data:
                 stored_username = entry['username']
-                stored_password_dict = entry['password']
-                if username == stored_username and verify_password(password, stored_password_dict):
+                stored_password_result = entry['password']
+                if username == stored_username and verify_password(password, stored_password_result):
                     return True
     except (FileNotFoundError, json.JSONDecodeError):
         return False
@@ -51,7 +52,7 @@ def verify_password(input_password, stored_password_dict):
     stored_hashed_password = stored_password_dict['hashed_password']
 
     # Hasher le mot de passe d'entrée avec le sel stocké
-    hashed_input_password = bcrypt.hashpw(input_password.encode('utf-8'), stored_salt)
+    hashed_input_password = bcrypt.checkpw(input_password.encode('utf-8'), stored_hashed_password)
 
     # Comparer le mot de passe hashé avec le mot de passe hashé stocké
     return hashed_input_password == stored_hashed_password

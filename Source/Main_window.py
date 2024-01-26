@@ -10,7 +10,7 @@ from Gestion_data_user import GestionUserData
 
 class MyWindow_Main(MyWindow_base, GestionUserData):
     
-    def __init__(self, file_path='data.json'):
+    def __init__(self):
         # Appeler le constructeur de la classe parente
         super().__init__()
 
@@ -19,7 +19,6 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.liste_identifiants = []
         self.liste_mots_de_passe = []
         
-        self.file_path = file_path
         self.username = self.have_current_username()
         self.maj_liste()
 
