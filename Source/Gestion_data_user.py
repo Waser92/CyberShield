@@ -22,7 +22,14 @@ class GestionUserData:
         with open(self.user_data_filename, 'w') as file:
             json.dump(existing_data, file, indent=4)
 
-
+    def get_all_user_data(self):
+        if os.path.exists(self.user_data_filename):
+            with open(self.user_data_filename, 'r') as file:
+                user_data = json.load(file)
+            return list(user_data.values())
+        else:
+            return []
+        
     def load_user_data(self):
         # Charger les données existantes (si le fichier existe)
         if os.path.exists(self.user_data_filename):

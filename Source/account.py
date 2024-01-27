@@ -1,58 +1,44 @@
 import bcrypt
-import json
-import base64
+
+# Génération d'une "salt" fixe
+SALT = bcrypt.gensalt()
 
 def hash_password(password):
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-
-    salt_str = base64.b64encode(salt).decode('utf-8')  # Convertir en chaîne
-
-    return {'salt': salt_str, 'hashed_password': hashed_password.decode('utf-8')}
+    # Utilise la fonction bcrypt pour hacher le mot de passe avec la "salt" fixe
+    hashed = bcrypt.hashpw(password.encode('utf-8'), SALT)
+    return hashed
 
 def save_password(username, password):
-    try:
-        with open('accounts.json', 'r') as file:
-            data = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = []
+    # Vérifie si le nom d'utilisateur est déjà pris
+    with open('accounts.txt', 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            stored_username, _ = line.strip().split(':')
+            if stored_username == username:
+                return True  # Nom d'utilisateur déjà pris
 
-    # Vérifiez si le nom d'utilisateur est déjà pris
-    for account in data:
-        if account['username'] == username:
-            return True  # Nom d'utilisateur déjà pris
+    # Hache le mot de passe avant de le stocker
+    hashed_password = hash_password(password)
 
-    # Ajoutez le nouvel utilisateur à la liste des comptes avec le mot de passe hashé
-    hashed_password_result = hash_password(password)
-    data.append({'username': username, 'password': hashed_password_result})
+    # Ajoute le nouveau compte à la liste
+    new_account = f"{username}:{hashed_password.decode('utf-8')}\n"
+    
+    with open('accounts.txt', 'a') as file:
+        file.write(new_account)
 
-
-    # Enregistrez la liste mise à jour dans le fichier avec un encodeur personnalisé
-    with open('accounts.json', 'w') as file:
-        json.dump(data, file, indent=4, default=lambda x: x.__dict__)
-
-    return False  # Pas d'erreur, le compte est ajouté avec succès
+    return False  # Compte ajouté avec succès
 
 def check_credentials(username, password):
-    try:
-        with open('accounts.json', 'r') as file:
-            data = json.load(file)
-            for entry in data:
-                stored_username = entry['username']
-                stored_password_result = entry['password']
-                if username == stored_username and verify_password(password, stored_password_result):
-                    return True
-    except (FileNotFoundError, json.JSONDecodeError):
-        return False
+    # Recherche du compte correspondant aux identifiants fournis
+    with open('accounts.txt', 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            stored_username, stored_password = line.strip().split(':')
+            if stored_username == username:
+                # Vérifie le mot de passe haché avec la "salt" fixe
+                if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+                    return True  # Identifiants valides
+                else:
+                    return False  # Mot de passe incorrect
 
-    return False
-
-def verify_password(input_password, stored_password_dict):
-    stored_salt = base64.b64decode(stored_password_dict['salt'])  # Convertir en bytes
-    stored_hashed_password = stored_password_dict['hashed_password']
-
-    # Hasher le mot de passe d'entrée avec le sel stocké
-    hashed_input_password = bcrypt.checkpw(input_password.encode('utf-8'), stored_hashed_password)
-
-    # Comparer le mot de passe hashé avec le mot de passe hashé stocké
-    return hashed_input_password == stored_hashed_password
+    return False  # Aucun compte correspondant aux identifiants

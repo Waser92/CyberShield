@@ -20,10 +20,10 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.liste_mots_de_passe = []
         
         self.username = self.have_current_username()
-        self.maj_liste()
 
         # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
         self.user_data_manager = GestionUserData(self.username)
+        self.maj_liste()
         
     def create_widgets(self):
         self.create_title()
@@ -157,29 +157,35 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             messagebox.showinfo("Succès", "Mot de passe ajouté/modifié avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
-            
+    
     def maj_liste(self):
         # Efface la liste actuelle
         self.listbox.delete(0, tk.END)
 
+        # Récupère toutes les données utilisateur
+        all_user_data = self.user_data_manager.load_user_data()
+
         # Ajoute les éléments mis à jour
-        for i, identifiant in enumerate(self.liste_identifiants):
-            self.listbox.insert(tk.END, f"Site {self.extraire_info('Site', self.liste_mots_de_passe[i])}")
+        for data in all_user_data:
+            identifiant = data.get('identifiant', '')  # Utilisez get pour obtenir la valeur de la clé ou une chaîne vide si la clé est manquante
+            site = data.get('site', '')
+            email = data.get('email', '')
+            mot_de_passe = data.get('mot_de_passe', '')
+
+            self.listbox.insert(tk.END, f"Site: {site}")
             self.listbox.insert(tk.END, f"     Identifiant: {identifiant}")
-            self.listbox.insert(tk.END, f"     Email: {self.extraire_info('Email', self.liste_mots_de_passe[i])}")
-            self.listbox.insert(tk.END, f"     Mot de passe: {self.extraire_info('Mot de Passe', self.liste_mots_de_passe[i])}")
+            self.listbox.insert(tk.END, f"     Email: {email}")
+            self.listbox.insert(tk.END, f"     Mot de passe: {mot_de_passe}")
             self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
 
         # Active le bouton "Modifier" et "Supprimer" lorsque la liste n'est pas vide
-            self.bouton_supprimer.config(state=tk.NORMAL)
-        else:
-            self.bouton_supprimer.config(state=tk.DISABLED)
+        self.bouton_supprimer.config(state=tk.NORMAL) if all_user_data else self.bouton_supprimer.config(state=tk.DISABLED)
 
 
-    def extraire_info(self, champ, infos):
-        debut_champ = infos.find(f"{champ}: ") + len(f"{champ}: ")
-        fin_champ = infos.find(",", debut_champ) if champ != "Mot de Passe" else len(infos)
-        return infos[debut_champ:fin_champ]
+        def extraire_info(self, champ, infos):
+            debut_champ = infos.find(f"{champ}: ") + len(f"{champ}: ")
+            fin_champ = infos.find(",", debut_champ) if champ != "Mot de Passe" else len(infos)
+            return infos[debut_champ:fin_champ]
 
     def supprimer_mot_de_passe(self):
         # Récupère l'identifiant sélectionné dans la liste
@@ -196,7 +202,8 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             self.maj_liste()
 
             messagebox.showinfo("Succès", "Mot de passe supprimé avec succès.")
-        # Méthode pour effacer le texte initial lors du clic dans le champ de saisie
+        else:
+            messagebox.showwarning("Attention", "Veuillez sélectionner un mot de passe à supprimer.")
 
     
     def clear_entry(self, event, widget):
