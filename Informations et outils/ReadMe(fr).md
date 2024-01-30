@@ -37,12 +37,13 @@ Notre programme est constitué de fichiers en language python:
 
   -Entry_window.py  Ce fichier contient l'interface d'entrée du logiciel. L'utilisateur peut choisir de creer un compte ou de se connecter.
 
-  -Gestion_data_user.py
+  -Gestion_data_user.py Ce fichier permet la gestion des données utilisateur
   
-  Main_window.py
+  -Main_window.py Ce fichier contient l'interface principal du logiciel. Une fois connecté, l'utilisateur peux y acceder et enregistré ses mots de passe.=
 
+Notre logiciel est également constitués de trois fichiers Data:
 
-Mais également de trois fichiers Data.
-        - current_user.json 
-        - account.json
-        - User.json
+        - current_user.json Ce fichier stocke le nom d'utilisateur lorsqu'il est connecté, cela permet de stocker cette valeur pour être récupérés immediatement en cas de besoin.
+
+        - account.txt  Ce fichier texte stocke les comptes des utilisateurs incluant le mot de passe et le nom d'utilisateur. Il permet donc la connection
+        - User.json  Chaque utilisateur qui stocke ses données sur le logiciel a automatiquement un fichier commencant par son nom d'utilisateur. Il contient donc les informations et données de l'utilisateur en question.

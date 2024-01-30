@@ -5,6 +5,7 @@ import string
 import subprocess
 import json
 from Classes import MyWindow_base
+from Research_window import Research_window
 from Gestion_data_user import GestionUserData
 
 
@@ -19,30 +20,33 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.liste_mots_de_passe = []
         
         self.username = self.have_current_username()
-
         # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
         self.user_data_manager = GestionUserData(self.username)
-        self.maj_liste()
-        
+
     def create_widgets(self):
         self.create_title()
+        self.create_deconnection_button()
         self.create_subtitle()
-        self.create_listbox()
         self.create_buttons()
         
     
     def create_title(self):
-        label_title = tk.Label(self.frame_top, text="Gestionnaire de Mots de passe \n", font=("Courrier", 40), bg='#030720', fg='white')
+        label_title = tk.Label(self.frame_top, text="\nGestionnaire de Mots de passe", font=("Courrier", 40), bg='#030720', fg='white')
         label_title.pack()
+
+    def create_deconnection_button(self):
+        bouton_deconnecter = tk.Button(self.frame_top, text="Déconnecter", command=self.deconnection)
+        bouton_deconnecter.pack(pady=10, ipadx=10, ipady=10)
 
     def create_subtitle(self):
         label_subtitle = tk.Label(self.frame_top, text="Vous pouvez maintenant enregistrer vos \n informations de connexion en toute sécurité.", font=("Courrier", 25), bg='#030720', fg='white')
         label_subtitle.pack()
 
     def create_buttons(self):
-        # Bouton Déconnecter
-        bouton_deconnecter = tk.Button(self.frame_top, text="Déconnecter", command=self.deconnection)
-        bouton_deconnecter.pack(pady=10, ipadx=10, ipady=10)
+        # Bouton Chercher
+        self.bouton_chercher = tk.Button(self.frame_bottom, text="Chercher à partir du Site", command=self.ouvrir_fenetre_recherche)
+        self.bouton_chercher.pack(pady=10, ipadx=20, ipady=10)
+        self.bouton_chercher.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
 
         # Bouton Ajouter
         self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
@@ -52,12 +56,6 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.bouton_supprimer = tk.Button(self.frame_bottom, text="Supprimer", command=self.supprimer_mot_de_passe)
         self.bouton_supprimer.pack(pady=10, ipadx=20, ipady=10)
         self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
-        
-    def create_listbox(self):
-        #Listbox pour afficher les mots de passe
-        self.listbox = tk.Listbox(self.frame_center, selectmode=tk.SINGLE, font=("Arial", 12, "bold"))
-        self.listbox.pack(pady=20)
-
 
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
@@ -98,7 +96,7 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
 
 
         bouton_valider = tk.Button(nouvelle_fenetre, text="Valider", command=lambda: self.valider_mot_de_passe(
-            self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_password.get(), nouvelle_fenetre))
+        self.entry_site.get(), self.entry_email.get(), self.entry_identifiant.get(), self.entry_password.get(), nouvelle_fenetre))
         bouton_valider.grid(row=4, column=0, columnspan=2, pady=10)
 
     def deconnection(self):
@@ -113,7 +111,7 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             with open('current_user.json', 'w') as file:
                 file.truncate(0)  # Efface tout le contenu du fichier
         except Exception as e:
-            messagebox.showerror("Erreur de suppression", f"Une erreur s'est produite lors de la suppression : {str(e)}")
+            messagebox.showinfo("Erreur de suppression", f"Une erreur s'est produite lors de la suppression : {str(e)}")
 
     def have_current_username(self):
         try:
@@ -123,68 +121,29 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             return current_username
         except (FileNotFoundError, json.JSONDecodeError, KeyError):
             return None
-        
-    def restore_default_text(self, event, widget):
-        initial_text = "Site: " if widget == self.entry_site else "Email: " if widget == self.entry_email else "Identifiant" if widget == self.entry_identifiant else "Mot de passe"
-
-        if not widget.get():
-            widget.insert(0, initial_text)
-            widget.config(fg='grey')  # Changer la couleur du texte en gris clair
 
     def valider_mot_de_passe(self, site, email, identifiant, mot_de_passe, fenetre):
         if site and identifiant and mot_de_passe:
-            if identifiant in self.liste_identifiants:
-                index = self.liste_identifiants.index(identifiant)
-                self.liste_mots_de_passe[index] = f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}"
-            else:
-                self.liste_identifiants.append(identifiant)
-                self.liste_mots_de_passe.append(f"Site: {site}, Email: {email}, Mot de Passe: {mot_de_passe}")
-
+            # ...
             # Enregistrez les données dans le fichier JSON utilisateur spécifique
             data_to_save = {
-                'site': site,
-                'email': email,
-                'identifiant': identifiant,
-                'mot_de_passe': mot_de_passe
+                'entry_site': site,
+                'entry_email': email,
+                'entry_identifiant': identifiant,
+                'entry_password': mot_de_passe
             }
-            self.user_data_manager.save_user_data({identifiant: data_to_save})
-
-            # Mettez à jour la liste affichée dans la fenêtre principale
-            self.maj_liste()
+            self.user_data_manager.save_user_data(data_to_save)
             fenetre.destroy()
 
             messagebox.showinfo("Succès", "Mot de passe ajouté avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
-    
-    def maj_liste(self):
-        # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
-        user_data_manager = GestionUserData(self.username)
-        all_user_data = user_data_manager.get_all_user_data()
 
-        # Efface la liste actuelle
-        self.listbox.delete(0, tk.END)
-
-        # Ajoute les éléments mis à jour
-        for data in all_user_data:
-            self.listbox.insert(tk.END, f"Site: {data.get('site', 'N/A')}")
-            self.listbox.insert(tk.END, f"     Identifiant: {data.get('identifiant', 'N/A')}")
-            self.listbox.insert(tk.END, f"     Email: {data.get('email', 'N/A')}")
-            self.listbox.insert(tk.END, f"     Mot de passe: {data.get('mot_de_passe', 'N/A')}")
-            self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
-
-        # Active le bouton "Supprimer" lorsque la liste n'est pas vide
-        if all_user_data:
-            self.bouton_supprimer.config(state=tk.NORMAL)
-        else:
-            self.bouton_supprimer.config(state=tk.DISABLED)
-
-
-    def extraire_info(self, champ, infos):
-        debut_champ = infos.find(f"{champ}: ") + len(f"{champ}: ")
-        fin_champ = infos.find(",", debut_champ) if champ != "Mot de Passe" else len(infos)
-        return infos[debut_champ:fin_champ]
-
+    def ouvrir_fenetre_recherche(self):
+        recherche_window = Research_window(self.window, self.user_data_manager)
+        recherche_window.window.transient(self.window)  # Définir la fenêtre de recherche comme fenêtre enfant
+        recherche_window.window.grab_set()  # Empêcher l'interaction avec la fenêtre principale pendant la recherche
+        self.window.wait_window(recherche_window.window)  # Attendre la fermeture de la fenêtre de recherche
 
     def supprimer_mot_de_passe(self):
         # Récupère l'identifiant sélectionné dans la liste

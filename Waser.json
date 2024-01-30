@@ -1,10 +1,8 @@
 {
-    "default_site_key": {
-        "Thomas": {
-            "site": "Google",
-            "email": "outlook",
-            "identifiant": "Thomas",
-            "mot_de_passe": "!njksv"
-        }
+    "Google": {
+        "site": "Google",
+        "email": "Outlook",
+        "identifiant": "Thomas",
+        "mot_de_passe": "zefgezqf"
     }
 }

@@ -59,7 +59,6 @@ class MyWindow_connection(MyWindow_base):
         
 
     def create_buttons(self):
-        
         # Ajustez le style des boutons pour augmenter la taille
         style = ttk.Style()
         style.configure("TButton", padding=(20, 10))
@@ -68,7 +67,7 @@ class MyWindow_connection(MyWindow_base):
         bouton_valider.pack(pady=10)
 
     def delete_current_user(self):
-            with open('current_user.txt', 'w') as file:
+            with open('current_user.json', 'w') as file:
                 file.truncate(0)  # Efface tout le contenu du fichier
                 
 
