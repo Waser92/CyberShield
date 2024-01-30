@@ -4,8 +4,8 @@ import random
 import string
 import subprocess
 import json
+import os
 from Classes import MyWindow_base
-from Research_window import Research_window
 from Gestion_data_user import GestionUserData
 
 
@@ -20,6 +20,7 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.liste_mots_de_passe = []
         
         self.username = self.have_current_username()
+
         # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
         self.user_data_manager = GestionUserData(self.username)
 
@@ -44,9 +45,8 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
 
     def create_buttons(self):
         # Bouton Chercher
-        self.bouton_chercher = tk.Button(self.frame_bottom, text="Chercher à partir du Site", command=self.ouvrir_fenetre_recherche)
+        self.bouton_chercher = tk.Button(self.frame_bottom, text="Chercher dans mes données", command=self.open_Research_window)
         self.bouton_chercher.pack(pady=10, ipadx=20, ipady=10)
-        self.bouton_chercher.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
 
         # Bouton Ajouter
         self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
@@ -113,6 +113,10 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         except Exception as e:
             messagebox.showinfo("Erreur de suppression", f"Une erreur s'est produite lors de la suppression : {str(e)}")
 
+    def open_Research_window(self):
+            script_path = os.path.join("Source", "Research_window.py")
+            subprocess.Popen(["python", script_path])
+
     def have_current_username(self):
         try:
             with open('current_user.json', 'r') as file:
@@ -137,13 +141,8 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
 
             messagebox.showinfo("Succès", "Mot de passe ajouté avec succès.")
         else:
-            messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
+            messagebox.showinfo("Attention", "Veuillez remplir tous les champs obligatoires.")
 
-    def ouvrir_fenetre_recherche(self):
-        recherche_window = Research_window(self.window, self.user_data_manager)
-        recherche_window.window.transient(self.window)  # Définir la fenêtre de recherche comme fenêtre enfant
-        recherche_window.window.grab_set()  # Empêcher l'interaction avec la fenêtre principale pendant la recherche
-        self.window.wait_window(recherche_window.window)  # Attendre la fermeture de la fenêtre de recherche
 
     def supprimer_mot_de_passe(self):
         # Récupère l'identifiant sélectionné dans la liste

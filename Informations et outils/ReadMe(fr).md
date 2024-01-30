@@ -39,7 +39,7 @@ Notre programme est constitué de fichiers en language python:
 
   -Gestion_data_user.py Ce fichier permet la gestion des données utilisateur
   
-  -Main_window.py Ce fichier contient l'interface principal du logiciel. Une fois connecté, l'utilisateur peux y acceder et enregistré ses mots de passe.=
+  -Main_window.py Ce fichier contient l'interface principal du logiciel. Une fois connecté, l'utilisateur peux y acceder et enregistré ses mots de passe.
 
 Notre logiciel est également constitués de trois fichiers Data:
 

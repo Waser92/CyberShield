@@ -45,3 +45,4 @@ class MyWindow_base:
         subprocess.Popen(["python", script_path])
         self.window.destroy()
     
+    
