@@ -78,7 +78,7 @@ class MyWindow_connection(MyWindow_base):
 
         if check_credentials(username, password):
             self.save_current_username(username)
-            messagebox.showinfo("Identification réussie")
+            messagebox.showinfo("Succès","Identification réussie")
             self.open_Main_window()
         else:
             messagebox.showinfo("Erreur", "Mot de passe ou identifiant incorrect")

@@ -1,10 +1,10 @@
 {
     "default_site_key": {
-        "thomas": {
-            "site": "Microsoft",
+        "Thomas": {
+            "site": "Google",
             "email": "outlook",
-            "identifiant": "thomas",
-            "mot_de_passe": "erfsqvgsr"
+            "identifiant": "Thomas",
+            "mot_de_passe": "!njksv"
         }
     }
 }

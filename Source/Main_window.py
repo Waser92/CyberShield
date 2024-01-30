@@ -9,7 +9,6 @@ from Gestion_data_user import GestionUserData
 
 
 class MyWindow_Main(MyWindow_base, GestionUserData):
-    
     def __init__(self):
         # Appeler le constructeur de la classe parente
         super().__init__()
@@ -33,7 +32,7 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         
     
     def create_title(self):
-        label_title = tk.Label(self.frame_top, text="\n Gestionnaire de Mots de passe ", font=("Courrier", 40), bg='#030720', fg='white')
+        label_title = tk.Label(self.frame_top, text="Gestionnaire de Mots de passe \n", font=("Courrier", 40), bg='#030720', fg='white')
         label_title.pack()
 
     def create_subtitle(self):
@@ -154,38 +153,38 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             self.maj_liste()
             fenetre.destroy()
 
-            messagebox.showinfo("Succès", "Mot de passe ajouté/modifié avec succès.")
+            messagebox.showinfo("Succès", "Mot de passe ajouté avec succès.")
         else:
             messagebox.showwarning("Attention", "Veuillez remplir tous les champs obligatoires.")
     
     def maj_liste(self):
+        # Nouvelle instance de GestionUserData avec le nom d'utilisateur actuel
+        user_data_manager = GestionUserData(self.username)
+        all_user_data = user_data_manager.get_all_user_data()
+
         # Efface la liste actuelle
         self.listbox.delete(0, tk.END)
 
-        # Récupère toutes les données utilisateur
-        all_user_data = self.user_data_manager.load_user_data()
-
         # Ajoute les éléments mis à jour
         for data in all_user_data:
-            identifiant = data.get('identifiant', '')  # Utilisez get pour obtenir la valeur de la clé ou une chaîne vide si la clé est manquante
-            site = data.get('site', '')
-            email = data.get('email', '')
-            mot_de_passe = data.get('mot_de_passe', '')
-
-            self.listbox.insert(tk.END, f"Site: {site}")
-            self.listbox.insert(tk.END, f"     Identifiant: {identifiant}")
-            self.listbox.insert(tk.END, f"     Email: {email}")
-            self.listbox.insert(tk.END, f"     Mot de passe: {mot_de_passe}")
+            self.listbox.insert(tk.END, f"Site: {data.get('site', 'N/A')}")
+            self.listbox.insert(tk.END, f"     Identifiant: {data.get('identifiant', 'N/A')}")
+            self.listbox.insert(tk.END, f"     Email: {data.get('email', 'N/A')}")
+            self.listbox.insert(tk.END, f"     Mot de passe: {data.get('mot_de_passe', 'N/A')}")
             self.listbox.insert(tk.END, "")  # Ajoute une ligne vide pour séparer les entrées
 
-        # Active le bouton "Modifier" et "Supprimer" lorsque la liste n'est pas vide
-        self.bouton_supprimer.config(state=tk.NORMAL) if all_user_data else self.bouton_supprimer.config(state=tk.DISABLED)
+        # Active le bouton "Supprimer" lorsque la liste n'est pas vide
+        if all_user_data:
+            self.bouton_supprimer.config(state=tk.NORMAL)
+        else:
+            self.bouton_supprimer.config(state=tk.DISABLED)
 
 
-        def extraire_info(self, champ, infos):
-            debut_champ = infos.find(f"{champ}: ") + len(f"{champ}: ")
-            fin_champ = infos.find(",", debut_champ) if champ != "Mot de Passe" else len(infos)
-            return infos[debut_champ:fin_champ]
+    def extraire_info(self, champ, infos):
+        debut_champ = infos.find(f"{champ}: ") + len(f"{champ}: ")
+        fin_champ = infos.find(",", debut_champ) if champ != "Mot de Passe" else len(infos)
+        return infos[debut_champ:fin_champ]
+
 
     def supprimer_mot_de_passe(self):
         # Récupère l'identifiant sélectionné dans la liste
@@ -203,7 +202,7 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
 
             messagebox.showinfo("Succès", "Mot de passe supprimé avec succès.")
         else:
-            messagebox.showwarning("Attention", "Veuillez sélectionner un mot de passe à supprimer.")
+            messagebox.showinfo("Attention", "Veuillez sélectionner un mot de passe à supprimer.")
 
     
     def clear_entry(self, event, widget):

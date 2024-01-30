@@ -72,7 +72,7 @@ class MyWindow_create_account(MyWindow_base):
         password = self.entry_mot_de_passe.get()
 
         if save_password(username, password):
-            messagebox.showinfo("Le nom d'utilisateur est déjà pris")
+            messagebox.showinfo("Erreur","Le nom d'utilisateur est déjà pris")
         else:
             self.save_current_username(username)
             messagebox.showinfo("Succès", "Compte ajouté avec succès.")
