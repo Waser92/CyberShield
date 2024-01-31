@@ -53,3 +53,22 @@ class GestionUserData:
             return user_data.get(site, {})
         else:
             return {}
+        
+    def delete_user_data_by_site(self, site):
+        try:
+            # Charger les données existantes
+            user_data = self.load_user_data()
+
+            # Vérifier si le site existe dans les données
+            if site in user_data:
+                # Supprimer les données liées au site
+                del user_data[site]
+
+                # Enregistrer les données mises à jour
+                self.save_user_data(user_data)
+                return True
+            else:
+                # Le site n'existe pas dans les données
+                return False
+        except Exception as e:
+            return False

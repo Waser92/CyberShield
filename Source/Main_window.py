@@ -52,11 +52,6 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
         self.bouton_ajouter = tk.Button(self.frame_bottom, text="Ajouter", command=self.ajouter_mot_de_passe)
         self.bouton_ajouter.pack(pady=10, ipadx=20, ipady=10)
 
-        # Bouton Supprimer
-        self.bouton_supprimer = tk.Button(self.frame_bottom, text="Supprimer", command=self.supprimer_mot_de_passe)
-        self.bouton_supprimer.pack(pady=10, ipadx=20, ipady=10)
-        self.bouton_supprimer.config(state=tk.DISABLED)  # Désactive le bouton au démarrage
-
     def ajouter_mot_de_passe(self):
         # Fenêtre pour saisir les informations du mot de passe
         nouvelle_fenetre = tk.Toplevel(self.frame_center)
@@ -142,25 +137,6 @@ class MyWindow_Main(MyWindow_base, GestionUserData):
             messagebox.showinfo("Succès", "Mot de passe ajouté avec succès.")
         else:
             messagebox.showinfo("Attention", "Veuillez remplir tous les champs obligatoires.")
-
-
-    def supprimer_mot_de_passe(self):
-        # Récupère l'identifiant sélectionné dans la liste
-        index_selection = self.listbox.curselection()
-        if index_selection:
-            identifiant_selectionne = self.liste_identifiants[index_selection[0]]
-
-            # Supprime l'identifiant et les informations associées de la liste
-            index_info = self.liste_identifiants.index(identifiant_selectionne)
-            del self.liste_identifiants[index_info]
-            del self.liste_mots_de_passe[index_info]
-
-            # Met à jour la liste affichée dans la fenêtre principale
-            self.maj_liste()
-
-            messagebox.showinfo("Succès", "Mot de passe supprimé avec succès.")
-        else:
-            messagebox.showinfo("Attention", "Veuillez sélectionner un mot de passe à supprimer.")
 
     
     def clear_entry(self, event, widget):
